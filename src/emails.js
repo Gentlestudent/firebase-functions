@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const FROM_ADDRESS = functions.config().mailer.email;
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp-mail.outlook.com',
+  host: functions.config().mailer.host,
   secure: false,
   port: 587,
   tls: {
