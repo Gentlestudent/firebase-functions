@@ -6,7 +6,7 @@ const FROM_ADDRESS = functions.config().mailer.email;
 const transporter = nodemailer.createTransport({
   host: functions.config().mailer.host,
   secure: false,
-  port: 587,
+  port: functions.config().mailer.port,
   tls: {
     ciphers: 'SSLv3'
   },
@@ -19,23 +19,24 @@ const transporter = nodemailer.createTransport({
 const sendMail = (mailOptions) => {
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error(error);
+      throw error;
     }
     console.log('Message sent!', info);
   });
 };
 
-const sendEmailVerification = (to, verificationLink) => {
+const sendEmailVerification = (to, displayName, verificationLink) => {
   const content = `
-    <h2>Welkom!</h2>
+    <p>Hallo ${displayName},</p>
 
-    <p>Om aan de slag te gaan, gelieve jouw account te activeren via deze link:</p>
-    <a href="${verificationLink}">${verificationLink}</a>
+    <p>Om aan de slag te gaan, gelieve jouw account te activeren via deze link:<br>
+    <a href="${verificationLink}">${verificationLink}</a></p>
 
-    Als jij niet hebt gevraagd om dit adres te verifiëren, mag je deze mail negeren.
+    <p>Als jij niet hebt gevraagd om dit adres te verifiëren, mag je deze mail negeren.</p>
 
-    Met vriendelijke groet
-    Team Gentlestudent
+    <p>Met vriendelijke groet,</p>
+    
+    <p>Team Gentlestudent</p>
   `;
 
   const mailOptions = {

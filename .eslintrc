@@ -14,7 +14,7 @@
     ],
     "comma-dangle": ["error", "never"],
     "no-underscore-dangle": 0,
-    "no-console": "warn",
+    "no-console": "off",
     "no-unused-expressions": ["error", { "allowTernary": true }],
     "no-return-assign": [2, "except-parens"],
     "no-param-reassign": ["error", { "props": false }]
