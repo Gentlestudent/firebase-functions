@@ -1,0 +1,8 @@
+{
+  "mailer": {
+    "host": "127.0.0.1",
+    "email": "example@email.com",
+    "pass": "",
+    "port": "1025"
+  }
+}
