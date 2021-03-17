@@ -1,4 +1,3 @@
-const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 
 const buildIssuer = async ({ criteria, ...rest }) => {
@@ -9,19 +8,13 @@ const buildIssuer = async ({ criteria, ...rest }) => {
   };
 };
 
-exports.getIssuer = async ({ id }) => {
+exports.getIssuer = async () => {
   try {
-    const issuer = await admin.firestore().collection('Issuers').doc(id).get();
-    if (!issuer.exists) throw new functions.https.HttpsError('not-found');
-
-    const { name, email, institution, phonenumber, url } = issuer.data();
-
     return buildIssuer({
-      name,
-      email,
-      url,
-      description: `Institution: ${institution} - Email: ${email} - Phone: ${phonenumber}`,
-      id: `${functions.config().frontend.url}api/issuers/${id}`
+      name: 'Gentlestudent',
+      email: functions.config().mailer.email,
+      url: functions.config().frontend.url,
+      id: `${functions.config().frontend.url}api/issuers/gentlestudent`
     });
   } catch (error) {
     console.log(error);

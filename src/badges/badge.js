@@ -38,7 +38,7 @@ exports.createBadgeClass = async (data, context) => {
   if (error) throw new functions.https.HttpsError('invalid-argument');
 
   try {
-    const issuer = await admin.firestore().collection('Participants').doc(issuerId).get();
+    const issuer = await admin.firestore().collection('Issuers').doc(issuerId).get();
 
     if (!issuer.exists) throw new functions.https.HttpsError('invalid-argument');
     if (!issuer.data().validated) throw new functions.https.HttpsError('permission-denied');
@@ -60,13 +60,12 @@ exports.getBadge = async ({ id }) => {
     if (!badge.exists) throw new functions.https.HttpsError('not-found');
 
     badge = badge.data();
-    const { issuerId } = badge;
     delete badge.badgeId;
 
     return buildBadgeClass({
       ...badge,
       id: `${functions.config().frontend.url}api/badges/${id}`,
-      issuer: `${functions.config().frontend.url}api/issuers/${issuerId}`
+      issuer: `${functions.config().frontend.url}api/issuers/gentlestudent`
     });
   } catch (error) {
     console.log(error);
