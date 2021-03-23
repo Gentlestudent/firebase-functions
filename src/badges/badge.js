@@ -4,9 +4,6 @@ const functions = require('firebase-functions');
 
 const schema = Joi.object({
   name: Joi.string().trim().min(1),
-  description: Joi.string().trim().min(1),
-  criteria: Joi.string().trim().min(1),
-  issuerId: Joi.string().trim().min(1),
   image: Joi.string()
     .trim()
     .min(1)
@@ -32,22 +29,13 @@ exports.createBadgeClass = async (data, context) => {
 
   const {
     error,
-    params: { name, description, issuerId, criteria, image }
+    params: { name, image }
   } = schema.validate(data);
 
   if (error) throw new functions.https.HttpsError('invalid-argument');
 
   try {
-    const issuer = await admin.firestore().collection('Issuers').doc(issuerId).get();
-
-    if (!issuer.exists) throw new functions.https.HttpsError('invalid-argument');
-    if (!issuer.data().validated) throw new functions.https.HttpsError('permission-denied');
-
-    admin
-      .firestore()
-      .collection('Badges')
-      .doc()
-      .set({ name, description, issuerId, criteria, image });
+    admin.firestore().collection('Badges').doc().set({ name, image });
   } catch (err) {
     console.log(err);
     throw err;
@@ -56,16 +44,20 @@ exports.createBadgeClass = async (data, context) => {
 
 exports.getBadge = async ({ id }) => {
   try {
-    let badge = await admin.firestore().collection('Badges').doc(id).get();
-    if (!badge.exists) throw new functions.https.HttpsError('not-found');
+    const opportunity = await admin.firestore().collection('Opportunities').doc(id).get();
+    if (!opportunity.exists) throw new functions.https.HttpsError('not-found');
+
+    let badge = await admin.firestore().collection('Badges').doc(opportunity.id).get();
 
     badge = badge.data();
     delete badge.badgeId;
 
     return buildBadgeClass({
       ...badge,
-      id: `${functions.config().frontend.url}api/badges/${id}`,
-      issuer: `${functions.config().frontend.url}api/issuers/gentlestudent`
+      id: `${functions.config().frontend.url}api/badges/${badge.id}`,
+      issuer: `${functions.config().frontend.url}api/issuers/gentlestudent`,
+      criteria: opportunity.shortDescription,
+      description: opportunity.longDescription
     });
   } catch (error) {
     console.log(error);
