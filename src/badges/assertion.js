@@ -26,7 +26,7 @@ const buildAssertion = async ({
   receiverId,
   issuedOn,
   feat,
-  issuer: { institution, website },
+  issuer: { institution, url },
   ...rest
 }) => {
   const receiver = (
@@ -50,7 +50,7 @@ const buildAssertion = async ({
       narrative: `Awarded for completing a ${
         feat.type === TYPES.learningOpportunity
           ? `learning opportunity provided by ${institution}${
-              website ? `. More on us: ${website}` : ''
+              url ? `. More on us: ${url}` : ''
             }`
           : 'quest'
       }.`
