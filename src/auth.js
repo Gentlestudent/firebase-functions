@@ -30,7 +30,7 @@ const sendAccountVerificationEmail = async (data, context) => {
   }
 };
 
-exports.createParticipant = async ({ email, name, institute }, context) => {
+exports.createParticipant = async ({ email, firstName, lastName, institute }, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated');
   }
@@ -42,7 +42,9 @@ exports.createParticipant = async ({ email, name, institute }, context) => {
 
     if (existingParticipant.exists) throw new functions.https.HttpsError('already-exists');
 
-    await participantsCollection.doc(context.auth.uid).set({ name, email, institute });
+    await participantsCollection
+      .doc(context.auth.uid)
+      .set({ name: `${firstName} ${lastName}`, firstName, lastName, email, institute });
 
     await sendAccountVerificationEmail(null, context);
   } catch (error) {
