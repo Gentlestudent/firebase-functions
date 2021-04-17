@@ -17,12 +17,15 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendMail = (mailOptions) => {
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      throw error;
+  transporter.sendMail(
+    { from: `Gentlestudent <${FROM_ADDRESS}>`, ...mailOptions },
+    (error, info) => {
+      if (error) {
+        throw error;
+      }
+      console.log('Message sent!', info);
     }
-    console.log('Message sent!', info);
-  });
+  );
 };
 
 const sendEmailVerification = (to, displayName, verificationLink) => {
@@ -40,7 +43,6 @@ const sendEmailVerification = (to, displayName, verificationLink) => {
   `;
 
   const mailOptions = {
-    from: `Gentlestudent <${FROM_ADDRESS}>`,
     to,
     subject: 'Verifieer jouw Gentlestudent account',
     html: content
@@ -52,8 +54,26 @@ const sendPasswordResetEmail = () => {};
 
 const sendEmailChangeConfirmation = () => {};
 
+const sendNewOrg = (to, displayName) => {};
+
+const sendNewParticipant = (to, displayName, participant) => {};
+
+const sendBadgeClaimed = (to, displayName, participant) => {};
+
+const sendAcceptedParticipation = (to, displayName, org) => {};
+
+const sendRejectedParticipation = (to, displayName, org) => {};
+
+const sendBadgeIssued = (to, displayName, org, assertion) => {};
+
 module.exports = {
   sendEmailVerification,
   sendPasswordResetEmail,
-  sendEmailChangeConfirmation
+  sendEmailChangeConfirmation,
+  sendBadgeClaimed,
+  sendAcceptedParticipation,
+  sendRejectedParticipation,
+  sendBadgeIssued,
+  sendNewOrg,
+  sendNewParticipant
 };
