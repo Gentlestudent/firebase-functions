@@ -22,13 +22,14 @@ const sendAccountVerificationEmail = async (data, context) => {
   const link = await auth.generateEmailVerificationLink(user.email);
 
   try {
-    await emails.sendEmailVerification(user.email, user.displayName, link);
+    emails.sendEmailVerification(user.email, user.displayName, link);
   } catch (error) {
-    console.log('ERROR');
     console.log(error);
     throw new functions.https.HttpsError('unknown');
   }
 };
+
+exports.sendAccountVerificationEmail = sendAccountVerificationEmail;
 
 exports.createParticipant = async ({ email, firstName, lastName, institute }, context) => {
   if (!context.auth) {

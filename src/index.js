@@ -1,6 +1,11 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
-const { createParticipant, resetPassword, changeEmail } = require('./auth');
+const {
+  createParticipant,
+  resetPassword,
+  changeEmail,
+  sendAccountVerificationEmail
+} = require('./auth');
 const {
   createAssertion,
   getAssertion,
@@ -19,3 +24,4 @@ exports.getAssertion = functions.https.onCall(getAssertion);
 exports.createBadgeClass = functions.https.onCall(createBadgeClass);
 exports.getBadge = functions.https.onCall(getBadge);
 exports.getIssuer = functions.https.onCall(getIssuer);
+exports.sendAccountVerificationEmail = functions.https.onCall(sendAccountVerificationEmail);
