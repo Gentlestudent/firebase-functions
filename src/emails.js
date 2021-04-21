@@ -54,67 +54,121 @@ const sendPasswordResetEmail = () => {};
 
 const sendEmailChangeConfirmation = () => {};
 
-const sendNewOrg = (to, displayName) => {};
-
 /**
- * Sends email to issuer when participant subscribes to learning opportunity
- * @param {{ to, opportunity: { title, id }, participant: { name, email } }} data Input data for the email
- * @param {string} data.to email address of the issuer
- * @param {string} data.opportunity.title title of the opportunity
- * @param {string} data.opportunity.id id of the opportunity
- * @param {string} data.participant.name name of the participant
- * @param {string} data.participant.email email address of the participant
+ * Sends email to admin when an organisation registers.
+ * @param {{ org: { name } }} data Input data for the email
+ * @param {string} data.org.name name of the organisation
  */
-const sendNewParticipant = ({ to, opportunity: { title, id }, participant: { name, email } }) => {
+const sendNewOrg = ({ org: { name } }) => {
+  // TODO update link
   const content = `
-    <p>Dag partner van Gentlestudent,</p>
-    
-    <p>Er heeft zich zopas iemand ingeschreven voor de leerkans: "${title}"</p>
-  
-    <p>De gegevens van deze persoon zijn: <br />
-    - Naam: ${name}<br />
-    - E-mailadres: ${email}</p>
+  <p>Beste Gentlestudent Admin</p> 
 
-    <p>Op <a href="https://gentlestudent.gent/opportunities/${id}">deze pagina</a> kan je jouw leerkans terugvinden,
-    en indien je bent ingelogd kan je er de deelnemer accepteren. Zodra je de deelnemer accepteert,
-    zal hij/zij een bevestigingsmail krijgen. Pas daarna kan de deelnemer met jou contact opnemen om verder af te stemmen.</p>
-    
-    <p>Met vriendelijke groet,</p>
-    
-    <p>Team Gentlestudent</p>`;
+  <p>${name} heeft zich zonet geregistreerd als issuer op Gentlestudent.
+  Gelieve deze registratie na te kijken, contact op te nemen met de organisatie indien dat nodig zou zijn om vervolgens de registratie al dan niet te accepteren.</p>
+  
+  <p>De registratie bekijken kan rechtstreeks via <a href="https://gentlestudent.gent/dashboard">deze link</a>.</p>
+  
+  <p>Met vriendelijke groet<br />
+  Gentlestudent.gent</p>`;
 
   sendMail({
-    to,
-    subject: `Inschrijving voor leerkans: ${title}`,
-    text: '',
+    to: functions.config().mailer.email,
+    subject: ``,
     html: content
   });
 };
 
-const sendBadgeClaimed = (to, displayName, participant) => {};
+/**
+ * Sends email to issuer when participant subscribes to learning opportunity
+ * @param {{ issuer: { email, orgName }, opportunity: { title, id } }} data Input data for the email
+ * @param {string} data.issuer.issuerEmail email address of the issuer
+ * @param {string} data.issuer.orgName organisation name of the issuer
+ * @param {string} data.opportunity.title title of the opportunity
+ * @param {string} data.opportunity.id id of the opportunity
+ */
+const sendNewParticipant = ({ issuer: { issuerEmail, orgName }, opportunity: { title, id } }) => {
+  const content = `
+  <p>Beste contactpersoon bij ${orgName}
+
+  <p>Een student heeft zich zonet geregistreerd om met "${title}" aan de slag te gaan. 
+  Je kan deze registratie nakijken via <a href="https://gentlestudent.gent/opportunities/${id}">deze rechtstreekse link</a> (vergeet niet om je in te loggen op het platform). 
+  Vervolgens kan je de registratie accepteren of weigeren.</p>
+  
+  <p>Indien je ervoor kiest om de registratie te weigeren, vul dan zeker een argumentatie in, 
+  zodat de student hiervan op de hoogte is. Indien je ervoor kiest om de registratie te accepteren 
+  dan zal de student een notificatie krijgen met oproep om met jou af te stemmen om vervolgens met de leerkans aan de slag te gaan. 
+  De student zal jou contacteren op dit emailadres.</p> 
+  
+  <p>Met vriendelijke groet<br /> 
+  Gentlestudent.gent</p>`;
+
+  sendMail({
+    to: issuerEmail,
+    subject: `Inschrijving voor leerkans: ${title}`,
+    html: content
+  });
+};
+
+/**
+ * Sends email to issuer when participant claims the badge.
+ * @param {{ issuer: { issuerEmail, orgName }, opportunity: { title }, participant: { participantName }}} data Input data for the email
+ * @param {string} data.issuer.issuerEmail email address of the issuer
+ * @param {string} data.issuer.orgName organisation name of the issuer
+ * @param {string} data.opportunity.title title of the opportunity
+ * @param {string} data.participant.participantName name of the participant
+ */
+const sendBadgeClaimed = ({
+  issuer: { issuerEmail, orgName },
+  opportunity: { title },
+  participant: { participantName }
+}) => {
+  // TODO student argumentation link + communication channel
+  const content = `
+  <p>Beste contactpersoon bij ${orgName}
+
+  <p>${participantName} geeft aan de leerkans "${title}" bij uw organisatie succesvol te hebben voltooid. 
+  Via deze link kan je de argumentatie van de student lezen en hem of haar de ‘badge’ toewijzen.</p>
+  
+  <p>Indien u niet akkoord gaat met de toewijzing van een badge of de argumentatie van 
+  de student kan u dit hier communiceren naar de student.</p> 
+  
+  <p>Met vriendelijke groet<br /> 
+  Gentlestudent.gent</p>`;
+
+  sendMail({
+    to: issuerEmail,
+    subject: `Inschrijving voor leerkans: ${title}`,
+    html: content
+  });
+};
 
 /**
  * Sends email to participant when issuer has approved them
- * @param {{ opportunity: { title }, participant: { participantName, participantEmail }, issuer: { issuerName, issuerEmail }}} data Input data for the email
- * @param {string} opportunity.title title of the opportunity
- * @param {string} participant.participantName name of the participant
- * @param {string} participant.participantEmail email of the participant (the email recipient)
- * @param {string} issuer.issuerEmail email address of the issuer
- * @param {string} issuer.issuerName name of the issuing organisation
+ * @param {{opportunity: { title }, participant: { participantEmail, participantName }, issuer: { issuerEmail, orgName }}} data Input data for the email
+ * @param {string} data.opportunity.title title of the opportunity
+ * @param {string} data.participant.participantName name of the participant
+ * @param {string} data.participant.participantEmail email of the participant (the email recipient)
+ * @param {string} data.issuer.issuerEmail email address of the issuer
+ * @param {string} data.issuer.orgName name of the issuing organisation
  */
 const sendAcceptedParticipation = ({
   opportunity: { title },
-  participant: { participantName, participantEmail },
-  issuer: { issuerName, issuerEmail }
+  participant: { participantEmail, participantName },
+  issuer: { issuerEmail, orgName }
 }) => {
   const content = `
-    <p>Dag ${participantName}</p>
-   
-    ${issuerName} heeft je registratie voor de leerkans "${title}" geaccepteerd. Je kan nu contact opnemen met de organisatie via mail.
-    <p> - E-mailadres: ${issuerEmail} </p>
+  <p>Beste ${participantName}</p>
+
+  <p>Je hebt je onlangs geregistreerd om met ${title} van ${orgName} aan de slag te gaan. 
+  Je registratie werd door de organisatie geaccepteerd.</p>  
     
-    <p>Veel succes!</p>
-    <p>Team Gentlestudent</p>`;
+  <p>Je kan via ${issuerEmail} contact opnemen met de organisatie om verder af te stemmen.</p> 
+    
+  <p>Veel succes!</p>
+    
+  <p>Met vriendelijke groet<br /> 
+  Gentlestudent.gent</p>`;
 
   sendMail({
     to: participantEmail,
@@ -123,7 +177,41 @@ const sendAcceptedParticipation = ({
   });
 };
 
-const sendRejectedParticipation = (to, displayName, org) => {};
+/**
+ * Sends email to participant when issuer has rejected them
+ * @param {{ participant: { participantEmail, participantName }, issuer: { orgName, issuerEmail }, opportunity: { title }, reason }} data Input data for the email
+ * @param {string} data.opportunity.title title of the opportunity
+ * @param {string} data.participant.participantName name of the participant
+ * @param {string} data.participant.participantEmail email of the participant (the email recipient)
+ * @param {string} data.issuer.issuerEmail email address of the issuer
+ * @param {string} data.issuer.orgName name of the issuing organisation
+ * @param {string} data.reason reason of rejection
+ */
+const sendRejectedParticipation = ({
+  participant: { participantEmail, participantName },
+  issuer: { orgName, issuerEmail },
+  opportunity: { title },
+  reason
+}) => {
+  const content = `
+  <p>Beste ${participantName}</p> 
+
+  <p>Je hebt je onlangs geregistreerd om met "${title}" van ${orgName} aan de slag te gaan. 
+  Je registratie werd door de organisatie helaas niet geaccepteerd omwille van onderstaande reden.</p>
+
+  “${reason}” 
+
+  <p>Je kan via ${issuerEmail} contact opnemen met de organisatie indien je graag verdere toelichting had gekregen.</p> 
+
+  <p>Met vriendelijke groet<br /> 
+  Gentlestudent.gent</p>`;
+
+  sendMail({
+    to: participantEmail,
+    subject: ``,
+    html: content
+  });
+};
 
 const sendBadgeIssued = (to, displayName, org, assertion) => {};
 
