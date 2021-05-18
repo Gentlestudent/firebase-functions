@@ -213,7 +213,7 @@ const sendRejectedParticipation = ({
   });
 };
 
-const sendBadgeIssued = (to, displayName, org, assertion) => {};
+// const sendBadgeIssued = (to, displayName, org, assertion) => {};
 
 module.exports = {
   sendEmailVerification,
@@ -222,7 +222,7 @@ module.exports = {
   sendBadgeClaimed,
   sendAcceptedParticipation,
   sendRejectedParticipation,
-  sendBadgeIssued,
+  // sendBadgeIssued,
   sendNewOrg,
   sendNewParticipant
 };

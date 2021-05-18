@@ -49,9 +49,7 @@ const buildAssertion = async ({
       }/${feat.evidence}`,
       narrative: `Awarded for completing a ${
         feat.type === TYPES.learningOpportunity
-          ? `learning opportunity provided by ${institution}${
-              url ? `. More on us: ${url}` : ''
-            }`
+          ? `learning opportunity provided by ${institution}${url ? `. More on us: ${url}` : ''}`
           : 'quest'
       }.`
     },
