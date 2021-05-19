@@ -65,3 +65,6 @@ node_modules/
 .env
 
 .runtimeconfig.json
+
+src/environments/env.*.js
+!src/environments/env.example.js

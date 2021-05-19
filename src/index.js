@@ -8,6 +8,7 @@ const {
   getBadge,
   getIssuer
 } = require('./badges');
+const { nextjs } = require('./server');
 
 admin.initializeApp();
 
@@ -19,3 +20,4 @@ exports.getAssertion = functions.https.onCall(getAssertion);
 exports.createBadgeClass = functions.https.onCall(createBadgeClass);
 exports.getBadge = functions.https.onCall(getBadge);
 exports.getIssuer = functions.https.onCall(getIssuer);
+exports.nextjs = { server: nextjs.server };
